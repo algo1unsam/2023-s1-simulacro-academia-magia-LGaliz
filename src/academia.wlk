@@ -72,20 +72,17 @@ class Academia {
 	var property muebles = #{}
 
 	method puedeGuardar(cosa) = self.algunMueblePuedeGuardar(cosa) and not self.yaExisteEnAlgunMueble(cosa)
-	method yaExisteEnAlgunMueble(cosa) = muebles.any({ mueble => mueble.contiene(cosa) }) //1.1
-	method dondeEsta(cosa) =  muebles.find({ mueble => mueble.contiene(cosa) }) //1.2
-	method algunMueblePuedeGuardar(cosa)= muebles.any({ mueble => mueble.puedeGuardar(cosa) }) //1.3
-	method dondePuedeGuardar(cosa) = muebles.filter({ mueble => mueble.puedeGuardar(cosa) }) //1.4	
-	method guardar(cosa) { //1.5
-		if (self.puedeGuardar(cosa)) {
-			self.dondePuedeGuardar(cosa).asList().first().guardar(cosa)
-		} else {
-			self.error("No se puede guardar")
-		}
+	method yaExisteEnAlgunMueble(cosa) = muebles.any({ mueble => mueble.contiene(cosa) })					 //1.1
+	method dondeEsta(cosa) =  muebles.find({ mueble => mueble.contiene(cosa) }) 		 					 //1.2
+	method algunMueblePuedeGuardar(cosa)= muebles.any({ mueble => mueble.puedeGuardar(cosa) }) 				 //1.3
+	method dondePuedeGuardar(cosa) = muebles.filter({ mueble => mueble.puedeGuardar(cosa) }) 				 //1.4	
+	method guardar(cosa) { 																					 //1.5
+		self.verificar(cosa)
+		self.dondePuedeGuardar(cosa).asList().first().guardar(cosa)
 	}
-	method menosUtiles() = muebles.map({ mueble => mueble.menosUtil() }).asSet()  //2.2
-	method marcaMenosUtil() = self.menosUtiles().min({ cosa => cosa.utilidad() }).marca()  //2.3
-	method removerMenosUtilesNoMagicos() {
+	method menosUtiles() = muebles.map({ mueble => mueble.menosUtil() }).asSet()  							 //2.2
+	method marcaMenosUtil() = self.menosUtiles().min({ cosa => cosa.utilidad() }).marca()  					 //2.3
+	method removerMenosUtilesNoMagicos() {																	 //2.4
 		self.validarHaySuficientesMuebles()
 		self.menosUtilesNoMagicos().forEach({ cosaARemover =>
 			const mueble = self.dondeEsta(cosaARemover)
@@ -98,4 +95,7 @@ class Academia {
 		}
 	}
 	method menosUtilesNoMagicos() = self.menosUtiles().filter({ cosa => not cosa.esMagico() })
+	method verificar(cosa) {
+		if (not self.puedeGuardar(cosa)) self.error("No se puede guardar")
+	}
 }
